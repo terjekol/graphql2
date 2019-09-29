@@ -14,7 +14,7 @@ const query = gql`{
 
 const mutation = gql` 
 mutation {
-  addAuthor(id: 2, name: "Terje", books: []) {
+  createAuthor(author: {name: "Terje"}) {
     id
     name
   }
@@ -28,9 +28,9 @@ function FetchData(props) {
 
   if (!doneMutation) {
     const [myMutation, { data2 }] = useMutation(mutation);
-    myMutation({ name: 'test' })
-    .then(result => console.log('result', result, 'data2', data2))
-    .catch(error=> console.error('error', error));
+    myMutation()
+      .then(result => console.log('result', result, 'data2', data2))
+      .catch(error => console.error('error', error));
     setDoneMutation(true);
   }
 

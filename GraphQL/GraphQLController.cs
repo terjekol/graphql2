@@ -23,7 +23,8 @@ namespace graphql2.GraphQL
 
             var schema = new Schema
             {
-                Query = new AuthorQuery(_db)
+                Query = new AuthorQuery(_db),
+                Mutation = new AuthorMutation(_db)
             };
 
             var result = await new DocumentExecuter().ExecuteAsync(_ =>
