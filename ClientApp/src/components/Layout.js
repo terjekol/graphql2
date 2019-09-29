@@ -17,12 +17,9 @@ class Layout extends Component {
 
     const clientParam = { uri: '/graphql' };
     let myAuth = this.props && this.props.auth;
-    console.log(this.props);
-    console.log('myAuth', myAuth);
     if (myAuth) {
       clientParam.request = async (operation) => {
         let token = await myAuth.getAccessToken();
-        console.log(token);
         operation.setContext({ headers: { authorization: token ? `Bearer ${token}` : '' } });
       }
     }

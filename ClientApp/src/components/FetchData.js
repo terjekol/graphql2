@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { withAuth } from '@okta/okta-react';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 const query = gql`{
@@ -12,17 +12,29 @@ const query = gql`{
   }
 }`;
 
-function FetchData(props){
-  //this.state = { forecasts: [], loading: true };
+const mutation = gql` 
+mutation {
+  addAuthor(id: 2, name: "Terje", books: []) {
+    id
+    name
+  }
+}`;
 
-    // this.props.auth.getAccessToken()
-    //   .then(accessToken => fetch('api/SampleData/WeatherForecasts', { headers: { Authorization: 'Bearer ' + accessToken } }))
-    //   .then(response => response.json())
-    //   .then(data => { this.setState({ forecasts: data, loading: false }); });
-    const { loading, error, data } = useQuery(query);
-    console.log(loading, error, data);
+function FetchData(props) {
+  const [doneMutation, setDoneMutation] = useState(0);
 
-    return <div>FetchData</div>;
+  // const { loading, error, data } = useQuery(query);
+  // console.log(loading, error, data);
+
+  if (!doneMutation) {
+    const [myMutation, { data2 }] = useMutation(mutation);
+    myMutation({ name: 'test' })
+    .then(result => console.log('result', result, 'data2', data2))
+    .catch(error=> console.error('error', error));
+    setDoneMutation(true);
+  }
+
+  return <div>FetchData</div>;
 }
 /*
 class FetchData extends Component {
