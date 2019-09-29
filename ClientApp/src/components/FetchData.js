@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
 import { withAuth } from '@okta/okta-react';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+
+const query = gql`{
+  author(id: 1) {
+    name,
+    books {
+      id, name
+    }
+  }
+}`;
 
 class FetchData extends Component {
   static displayName = FetchData.name;
@@ -40,6 +51,9 @@ class FetchData extends Component {
   }
 
   render() {
+    // const { loading, error, data } = useQuery(query);
+    // console.log(loading, error, data);
+
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
       : FetchData.renderForecastsTable(this.state.forecasts);
