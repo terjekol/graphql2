@@ -12,6 +12,19 @@ const query = gql`{
   }
 }`;
 
+function FetchData(props){
+  //this.state = { forecasts: [], loading: true };
+
+    // this.props.auth.getAccessToken()
+    //   .then(accessToken => fetch('api/SampleData/WeatherForecasts', { headers: { Authorization: 'Bearer ' + accessToken } }))
+    //   .then(response => response.json())
+    //   .then(data => { this.setState({ forecasts: data, loading: false }); });
+    const { loading, error, data } = useQuery(query);
+    console.log(loading, error, data);
+
+    return <div>FetchData</div>;
+}
+/*
 class FetchData extends Component {
   static displayName = FetchData.name;
 
@@ -51,8 +64,8 @@ class FetchData extends Component {
   }
 
   render() {
-    // const { loading, error, data } = useQuery(query);
-    // console.log(loading, error, data);
+    const { loading, error, data } = useQuery(query);
+    console.log(loading, error, data);
 
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
@@ -67,5 +80,6 @@ class FetchData extends Component {
     );
   }
 }
+*/
 
 export default withAuth(FetchData);
