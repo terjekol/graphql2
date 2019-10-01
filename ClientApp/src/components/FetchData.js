@@ -17,6 +17,9 @@ mutation AddBookToAuthor($name: String!, $id: ID!) {
   addBookToAuthor(name: $name, id: $id) {
     id
     name
+    books {
+      name
+    }
   }
 }`;
 
@@ -24,35 +27,16 @@ function FetchData() {
   const [myMutation] = useMutation(mutation);
   const runningQuery = useQuery(query);
   const [isSending, setIsSending] = useState(false);
-  const sendRequest = useCallback(async () => {
+  const [newBookName, setNewBookName] = useState('Next book');
+  const [authorFromMutation, setAuthorFromMutation] = useState(null);
+  const sendRequest = useCallback(async (newBookName) => {
     if (isSending) return;
     setIsSending(true)// update state    
-    let result = await myMutation({ variables: { name: 'boken', id: 1} });
-    console.log(result);
+    let result = await myMutation({ variables: { name: newBookName, id: 1 } });
     setIsSending(false)// once the request is sent, update state again
+    setAuthorFromMutation(result.data.addBookToAuthor);
   }, [isSending]) // update the callback if the state changes
-
-
-  //const [doneMutation, setDoneMutation] = useState(false);
-  //const [author, setAuthor] = useState(null);
-  //const [runningQuery, setRunningQuery] = useState(null);
-  // if (runningQuery == null) {
-  //   setRunningQuery(myQuery);
-  // }
-  let author = runningQuery.data && runningQuery.data.author;
-  console.log(author);
-
-  // if (!doneMutation) {
-  //   try {
-  //     setDoneMutation(true);
-  //     const [myMutation, { data2 }] = useMutation(mutation);
-  //     let result = await myMutation({ variables: { author: { name: 'Terje' } } });
-  //     console.log('result', result, 'data2', data2);
-  //   }
-  //   catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+  let author = authorFromMutation || (runningQuery.data && runningQuery.data.author);
 
   return !author
     ? <div>loading...</div>
@@ -60,7 +44,8 @@ function FetchData() {
       <ul>
         {author.books.map(book => <li>{book.name}</li>)}
       </ul>
-      <input type="button" disabled={isSending} onClick={sendRequest} value="Add Book" />
+      Book name: <input type="text" value={newBookName} onChange={e => setNewBookName(e.target.value)} />
+      <input type="button" disabled={isSending} onClick={()=>sendRequest(newBookName)} value="Add Book" />
     </div>;
 }
 

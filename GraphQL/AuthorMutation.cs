@@ -22,9 +22,9 @@ namespace graphql2.GraphQL
                     var name = context.GetArgument<string>("name");
                     var id = context.GetArgument<int>("id");
                     var dbAuthor = db.Authors
-                        .Include(a=>a.Books)
+                        .Include(a => a.Books)
                         .First(a => a.Id == id);
-                    dbAuthor.Books.Add(new Book{Name = name});
+                    dbAuthor.Books.Add(new Book { Name = name });
                     db.SaveChanges();
                     return dbAuthor;
                 }
