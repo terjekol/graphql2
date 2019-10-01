@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { withAuth } from '@okta/okta-react';
+import React, { useState, useCallback } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
+import { withAuth } from '@okta/okta-react';
 import { gql } from 'apollo-boost';
 
 const query = gql`{
@@ -13,18 +13,29 @@ author(id:1){
 }`;
 
 const mutation = gql` 
-mutation CreateAuthor($author: authorInput!) {
-  createAuthor(author: $author) {
+mutation AddBookToAuthor($name: String!, $id: ID!) {
+  addBookToAuthor(name: $name, id: $id) {
     id
     name
   }
 }`;
 
 function FetchData() {
+  const [myMutation] = useMutation(mutation);
+  const runningQuery = useQuery(query);
+  const [isSending, setIsSending] = useState(false);
+  const sendRequest = useCallback(async () => {
+    if (isSending) return;
+    setIsSending(true)// update state    
+    let result = await myMutation({ variables: { name: 'boken', id: 1} });
+    console.log(result);
+    setIsSending(false)// once the request is sent, update state again
+  }, [isSending]) // update the callback if the state changes
+
+
   //const [doneMutation, setDoneMutation] = useState(false);
   //const [author, setAuthor] = useState(null);
   //const [runningQuery, setRunningQuery] = useState(null);
-  const runningQuery = useQuery(query);
   // if (runningQuery == null) {
   //   setRunningQuery(myQuery);
   // }
@@ -49,64 +60,8 @@ function FetchData() {
       <ul>
         {author.books.map(book => <li>{book.name}</li>)}
       </ul>
+      <input type="button" disabled={isSending} onClick={sendRequest} value="Add Book" />
     </div>;
 }
-/*
-class FetchData extends Component {
-  static displayName = FetchData.name;
- 
-  constructor(props) {
-    super(props);
-    this.state = { forecasts: [], loading: true };
- 
-    this.props.auth.getAccessToken()
-      .then(accessToken => fetch('api/SampleData/WeatherForecasts', { headers: { Authorization: 'Bearer ' + accessToken } }))
-      .then(response => response.json())
-      .then(data => { this.setState({ forecasts: data, loading: false }); });
-  }
- 
-  static renderForecastsTable(forecasts) {
-    return (
-      <table className='table table-striped'>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.dateFormatted}>
-              <td>{forecast.dateFormatted}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    );
-  }
- 
-  render() {
-    const { loading, error, data } = useQuery(query);
-    console.log(loading, error, data);
- 
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
- 
-    return (
-      <div>
-        <h1>Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
-        {contents}
-      </div>
-    );
-  }
-}
-*/
 
 export default withAuth(FetchData);

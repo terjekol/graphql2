@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using graphql2.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace graphql2.GraphQL
 {
@@ -12,15 +13,20 @@ namespace graphql2.GraphQL
         public AuthorMutation(ApplicationDbContext db)
         {
             Field<AuthorType>(
-                "createAuthor",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<AuthorInputType>> { Name = "author" }),
+                "addBookToAuthor",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
+                    new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "id" }),
                 resolve: context =>
                 {
-                    var author = context.GetArgument<Author>("author");
-                    author.Id = 1 + db.Authors.Max(a => a.Id);
-                    db.Authors.Add(author);
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<int>("id");
+                    var dbAuthor = db.Authors
+                        .Include(a=>a.Books)
+                        .First(a => a.Id == id);
+                    dbAuthor.Books.Add(new Book{Name = name});
                     db.SaveChanges();
-                    return author;
+                    return dbAuthor;
                 }
             );
         }
