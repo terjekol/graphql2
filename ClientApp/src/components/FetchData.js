@@ -28,7 +28,7 @@ function FetchData() {
   // if (runningQuery == null) {
   //   setRunningQuery(myQuery);
   // }
-  let author = runningQuery.data;
+  let author = runningQuery.data && runningQuery.data.author;
   console.log(author);
 
   // if (!doneMutation) {
@@ -43,8 +43,13 @@ function FetchData() {
   //   }
   // }
 
-  if (runningQuery == null || runningQuery.loading) return <div>loading...</div>;
-  return <div>Data: {author.name}</div>;
+  return !author
+    ? <div>loading...</div>
+    : <div>Data: {author.name}
+      <ul>
+        {author.books.map(book => <li>{book.name}</li>)}
+      </ul>
+    </div>;
 }
 /*
 class FetchData extends Component {
