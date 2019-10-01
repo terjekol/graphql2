@@ -21,7 +21,7 @@ namespace graphql2
             {
                 ApplicationDbContext context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                var authorDbEntry = context.Authors.Add(
+                context.Authors.Add(
                     new Author
                     {
                         Id = 1,
